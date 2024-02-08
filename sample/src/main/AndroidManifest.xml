@@ -17,6 +17,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- When you invoke BaseDownloadTask#setWifiRequired(true), you need declare ACCESS_NETWORK_STATE permission -->
+    <!-- The permission of ACCESS_NETWORK_STATE is not required, but if you add this permission we will check whether network is valid before start it-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
@@ -29,8 +35,8 @@
         tools:targetApi="n">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -46,9 +52,5 @@
         <activity android:name=".ContentUriActivity" />
         <activity android:name=".NotificationActivity" />
     </application>
-    <!-- When you invoke BaseDownloadTask#setWifiRequired(true), you need declare ACCESS_NETWORK_STATE permission -->
-    <!-- The permission of ACCESS_NETWORK_STATE is not required, but if you add this permission we will check whether network is valid before start it-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

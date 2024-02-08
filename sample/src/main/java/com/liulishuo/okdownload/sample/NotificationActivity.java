@@ -16,16 +16,20 @@
 
 package com.liulishuo.okdownload.sample;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 
 import com.liulishuo.okdownload.DownloadListener;
 import com.liulishuo.okdownload.DownloadTask;
@@ -64,7 +68,12 @@ public class NotificationActivity extends BaseSampleActivity {
         // for cancel action on notification.
         IntentFilter filter = new IntentFilter(CancelReceiver.ACTION);
         cancelReceiver = new CancelReceiver(task);
-        registerReceiver(cancelReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(cancelReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(cancelReceiver, filter);
+        }
+
 
         GlobalTaskManager.getImpl().attachListener(task, listener);
         GlobalTaskManager.getImpl().addAutoRemoveListenersWhenTaskEnd(task.getId());
@@ -121,10 +130,15 @@ public class NotificationActivity extends BaseSampleActivity {
                 actionView.setTag(null);
             }
         });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+            }
+        }
 
         final Intent intent = new Intent(CancelReceiver.ACTION);
         final PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         listener.setAction(new NotificationCompat.Action(0, "Cancel", cancelPendingIntent));
         listener.initNotification();
